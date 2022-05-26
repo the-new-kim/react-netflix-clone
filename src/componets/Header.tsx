@@ -12,9 +12,9 @@ const Wrapper = styled(motion.header)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* background: linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)); */
-  padding: 0 50px;
+  padding: 0 4%;
   font-weight: 100;
+  z-index: 100;
 `;
 
 const Col = styled.div`
