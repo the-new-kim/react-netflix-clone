@@ -1,5 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -52,43 +58,27 @@ const Box = styled(motion.div)`
   margin-right: 10px;
 `;
 
-const fakeApi = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
 function Tv() {
-  const [items, setItems] = useState<number[]>([]);
+  const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setItems((pre) => [...fakeApi, ...pre]), []);
+  console.log("render", ref.current);
 
-  const onClick = () => {
-    setItems((oldItems) => {
-      const newItems = [...oldItems];
-      const firstItem = newItems[0];
-      newItems.splice(0, 1);
-      newItems.splice(newItems.length, 0, firstItem);
+  useEffect(() => {
+    console.log("use effect", ref.current);
+  });
 
-      return newItems;
-    });
-  };
-
-  console.log(items);
+  useLayoutEffect(() => {
+    console.log("use layout effect", ref.current?.clientWidth);
+  });
 
   return (
-    <Wrapper onClick={onClick}>
+    <Wrapper>
       <Row>
         <RowTitle>Title</RowTitle>
-        <Slider>
+        <Slider ref={ref}>
           <Items>
-            {items.map((item, index) => (
-              <Box
-                initial={{
-                  x: -210,
-                  backgroundColor: items[index] === 1 ? "red" : "blue",
-                }}
-                layout
-                key={item}
-              >
-                {item}
-              </Box>
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
+              <Box key={item}>{item}</Box>
             ))}
           </Items>
         </Slider>

@@ -3,6 +3,7 @@ import { defaultTheme } from "./theme";
 import Router from "./Router";
 import reset from "styled-reset";
 import { Helmet } from "react-helmet";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -37,6 +38,7 @@ function App() {
       </Helmet>
       <GlobalStyle />
       <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
     </ThemeProvider>
   );
 }
