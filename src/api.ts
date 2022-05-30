@@ -17,8 +17,8 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
-export function getMovies() {
+export function getMovies(category: string) {
   return fetch(
-    `${BASE_URL}movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`
+    `${BASE_URL}movie/${category}?api_key=${API_KEY}&language=en-US&page=1`
   ).then((response) => response.json());
 }

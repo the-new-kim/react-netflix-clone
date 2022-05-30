@@ -1,11 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { motion } from "framer-motion";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
