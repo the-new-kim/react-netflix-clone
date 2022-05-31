@@ -1,3 +1,5 @@
+import { atom } from "recoil";
+
 const API_KEY = "cf13f93b5d8390312d36ffb98bb38259";
 const BASE_URL = "https://api.themoviedb.org/3/";
 
@@ -22,3 +24,28 @@ export function getMovies(category: string) {
     `${BASE_URL}movie/${category}?api_key=${API_KEY}&language=en-US&page=1`
   ).then((response) => response.json());
 }
+
+interface IGenres {
+  id: number;
+  name: string;
+}
+
+export interface IGetMovieDetals {
+  backdrop_path: string;
+  genres: IGenres[];
+  id: number;
+  title: string;
+  overview: string;
+  success: boolean;
+}
+
+export function getMovieDetails(id: string) {
+  return fetch(`${BASE_URL}movie/${id}?api_key=${API_KEY}&language=en-US`).then(
+    (response) => response.json()
+  );
+}
+
+export const imagePathState = atom({
+  key: "path",
+  default: "",
+});

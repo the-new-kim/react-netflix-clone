@@ -4,9 +4,11 @@ import { getMovies, IGetMoviesResult } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useLayoutEffect, useState } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { useMatch } from "react-router-dom";
 import Slider from "../componets/Slider";
+import Detail from "../componets/Detail";
+import Test from "../componets/Test";
 
 const Wrapper = styled.div`
   overflow-x: hidden;
@@ -49,11 +51,20 @@ const Overview = styled.p`
 `;
 
 function Home() {
-  const navigate = useNavigate();
-  const movieMatch = useMatch("/movies/:movieId");
-  const { isLoading, data } = useQuery<IGetMoviesResult>("movies", () =>
+  const movieMatch = useMatch("/movies/:category/:movieId");
+
+  const { isLoading, data } = useQuery<IGetMoviesResult>("now_playing", () =>
     getMovies("now_playing")
   );
+
+  const { isLoading: loadingTopRated, data: dataTopRated } =
+    useQuery<IGetMoviesResult>(["top_rated"], () => getMovies("top_rated"));
+
+  const { isLoading: loadingPopular, data: dataPopular } =
+    useQuery<IGetMoviesResult>("popular", () => {
+      return getMovies("popular");
+    });
+
   const [randomIndex, setRandomIndex] = useState(0);
 
   useLayoutEffect(() => {
@@ -61,10 +72,6 @@ function Home() {
       data ? Math.floor(Math.random() * data?.results.length) : prev
     );
   }, [data]);
-
-  const closeInfo = () => {
-    navigate("/");
-  };
 
   const loading = isLoading || randomIndex === null;
 
@@ -82,26 +89,32 @@ function Home() {
             <Title>{data?.results[randomIndex].title}</Title>
             <Overview>{data?.results[randomIndex].overview}</Overview>
           </Banner>
-          <Slider category={"now_playing"} title={"now"} />
-          <Slider category={"top_rated"} title={"top rated"} />
-          <Slider category={"upcoming"} title={"upcoming"} />
 
-          <AnimatePresence>
+          <Slider
+            data={data!}
+            title={"Movies in theatres"}
+            category={"now_playing"}
+          />
+          <Slider
+            data={dataTopRated!}
+            title={"Top movies"}
+            category={"top_rated"}
+          />
+          <Slider
+            data={dataPopular!}
+            title={"popular movies"}
+            category={"popular"}
+          />
+
+          {/* <AnimatePresence>
             {movieMatch ? (
-              <motion.div
-                onClick={closeInfo}
-                style={{
-                  position: "absolute",
-                  width: "50vw",
-                  height: "50vh",
-                  backgroundColor: "red",
-                  top: 0,
-                  left: 0,
-                }}
-                layoutId={movieMatch.params.movieId}
-              ></motion.div>
+              <Detail movieId={movieMatch!.params.movieId} />
             ) : null}
-          </AnimatePresence>
+          </AnimatePresence> */}
+
+          <Detail movieMatch={movieMatch} />
+
+          {/* {movieMatch ? <Detail movieMatch={movieMatch} /> : null} */}
         </>
       )}
     </Wrapper>

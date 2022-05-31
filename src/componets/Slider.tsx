@@ -1,9 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../api";
+import { IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled(motion.div)`
@@ -19,6 +18,11 @@ const Title = styled.h1`
   font-weight: bold;
   padding: 10px;
 `;
+
+const Container = styled.div`
+  position: relative;
+`;
+
 const Row = styled(motion.div)`
   display: grid;
   gap: 10px;
@@ -37,6 +41,7 @@ const Item = styled(motion.div)<{ $bgImg: string }>`
   color: red;
   font-size: 66px;
   transform: perspective(500px);
+
   transform-origin: bottom center;
   :first-child {
     transform-origin: bottom left;
@@ -103,17 +108,15 @@ const infoVariants = {
 const sliderOffset = 6;
 
 interface ISliderProps {
-  category: string;
+  data: IGetMoviesResult;
   title: string;
+  category: string;
 }
 
-function Slider({ category, title }: ISliderProps) {
-  const { isLoading, data } = useQuery<IGetMoviesResult>(category, () =>
-    getMovies(category)
-  );
+function Slider({ data, title, category }: ISliderProps) {
   const navigate = useNavigate();
-  const onItemClicked = (movieId: number) => {
-    navigate(`/movies/${category}${movieId}`);
+  const onItemClicked = (movieId: number, categoryName: string) => {
+    navigate(`/movies/${categoryName}/${movieId}`);
   };
 
   const [sliderIndex, setSliderIndex] = useState(0);
@@ -133,50 +136,49 @@ function Slider({ category, title }: ISliderProps) {
   };
 
   return (
-    <>
-      {isLoading ? null : (
-        <Wrapper>
-          <Title>{title}</Title>
-          <AnimatePresence initial={false} onExitComplete={toggleSliding}>
-            <Row
-              variants={rowVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              key={sliderIndex}
-              transition={{ type: "tween", duration: 1 }}
-            >
-              {data?.results
-                .slice(
-                  sliderOffset * sliderIndex,
-                  sliderOffset * sliderIndex + sliderOffset
-                )
-                .map((item) => (
-                  <Item
-                    layoutId={`${category}${item.id}`}
-                    onClick={() => onItemClicked(item.id)}
-                    variants={itemVariants}
-                    initial="initial"
-                    whileHover="hover"
-                    transition={{ type: "tween" }}
-                    $bgImg={makeImagePath(item.backdrop_path, "w500")}
-                    key={item.id}
-                  >
-                    <Info variants={infoVariants}>
-                      <h4>{item.title}</h4>
-                    </Info>
-                  </Item>
-                ))}
-            </Row>
-          </AnimatePresence>
-          <NextArrow onClick={increasesliderIndex}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-              <path d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z" />
-            </svg>
-          </NextArrow>
-        </Wrapper>
-      )}
-    </>
+    <Wrapper>
+      <Title>{title}</Title>
+
+      <Container>
+        <AnimatePresence initial={false} onExitComplete={toggleSliding}>
+          <Row
+            variants={rowVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            key={sliderIndex}
+            transition={{ type: "tween", duration: 1 }}
+          >
+            {data?.results
+              .slice(
+                sliderOffset * sliderIndex,
+                sliderOffset * sliderIndex + sliderOffset
+              )
+              .map((item) => (
+                <Item
+                  layoutId={`${category}${item.id}`}
+                  onClick={() => onItemClicked(item.id, category)}
+                  variants={itemVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  transition={{ type: "tween" }}
+                  $bgImg={makeImagePath(item.backdrop_path, "w500")}
+                  key={item.id}
+                >
+                  <Info variants={infoVariants}>
+                    <h4>{item.title}</h4>
+                  </Info>
+                </Item>
+              ))}
+          </Row>
+        </AnimatePresence>
+        <NextArrow onClick={increasesliderIndex}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z" />
+          </svg>
+        </NextArrow>
+      </Container>
+    </Wrapper>
   );
 }
 
