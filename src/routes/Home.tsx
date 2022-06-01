@@ -73,7 +73,8 @@ function Home() {
     );
   }, [data]);
 
-  const loading = isLoading || randomIndex === null;
+  const loading =
+    isLoading || loadingTopRated || loadingPopular || randomIndex === null;
 
   return (
     <Wrapper>

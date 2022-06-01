@@ -1,5 +1,3 @@
-import { atom } from "recoil";
-
 const API_KEY = "cf13f93b5d8390312d36ffb98bb38259";
 const BASE_URL = "https://api.themoviedb.org/3/";
 
@@ -36,7 +34,7 @@ export interface IGetMovieDetals {
   id: number;
   title: string;
   overview: string;
-  success: boolean;
+  runtime: number;
 }
 
 export function getMovieDetails(id: string) {
@@ -45,7 +43,8 @@ export function getMovieDetails(id: string) {
   );
 }
 
-export const imagePathState = atom({
-  key: "path",
-  default: "",
-});
+export function getSimilarMovies(id: string) {
+  return fetch(
+    `${BASE_URL}movie/${id}/similar?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
