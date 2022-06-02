@@ -37,7 +37,7 @@ const Item = styled(motion.div)<{ $bgImg: string }>`
   background-image: url(${(props) => props.$bgImg});
   background-size: cover;
   background-position: center center;
-  height: 10vw;
+  aspect-ratio: ${(props) => props.theme.coverRatio};
   color: red;
   font-size: 66px;
   transform: perspective(500px);

@@ -37,14 +37,31 @@ export interface IGetMovieDetals {
   runtime: number;
 }
 
-export function getMovieDetails(id: string) {
+export function getMovieDetails(id: string | number) {
   return fetch(`${BASE_URL}movie/${id}?api_key=${API_KEY}&language=en-US`).then(
     (response) => response.json()
   );
 }
 
-export function getSimilarMovies(id: string) {
+export function getSimilarMovies(id: string | number) {
   return fetch(
     `${BASE_URL}movie/${id}/similar?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+
+interface IVideo {
+  key: string;
+  site: string;
+  type: string;
+}
+
+export interface IGetVideosResult {
+  id: number;
+  results: IVideo[];
+}
+
+export function getVideos(id: string | number) {
+  return fetch(
+    `${BASE_URL}movie/${id}/videos?api_key=${API_KEY}&language=en-US`
   ).then((response) => response.json());
 }
