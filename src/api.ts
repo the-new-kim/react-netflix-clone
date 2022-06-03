@@ -1,6 +1,8 @@
 const API_KEY = "cf13f93b5d8390312d36ffb98bb38259";
 const BASE_URL = "https://api.themoviedb.org/3/";
 
+// https://api.themoviedb.org/3/movie/752623/videos?api_key=cf13f93b5d8390312d36ffb98bb38259&language=en-US
+
 export interface IMovie {
   id: number;
   backdrop_path: string;

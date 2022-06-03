@@ -10,7 +10,7 @@ import {
   IGetMoviesResult,
   IGetVideosResult,
 } from "../api";
-import { makeImagePath, toHoursAndMinutes } from "../utils";
+import { makeImagePath, makeVideoPath, toHoursAndMinutes } from "../utils";
 
 const Oberlay = styled(motion.div)`
   position: fixed;
@@ -147,7 +147,19 @@ function Detail({ movieMatch }: IDetailProps) {
                   <>
                     <Cover
                       $bgImg={makeImagePath(data?.backdrop_path || "", "w500")}
-                    ></Cover>
+                    >
+                      {loadingVideo ? null : (
+                        <iframe
+                          style={{ width: "100%", height: "100%" }}
+                          src={makeVideoPath(
+                            dataVideo?.results.find(
+                              (video) => video.type === "Trailer"
+                            )?.key || ""
+                          )}
+                          // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        ></iframe>
+                      )}
+                    </Cover>
 
                     <Info>
                       <Title>{data?.title}</Title>

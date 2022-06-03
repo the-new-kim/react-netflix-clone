@@ -3,7 +3,7 @@ export function makeImagePath(path: string, format?: string) {
 }
 
 export function makeVideoPath(key: string) {
-  return `https://www.youtube.com/watch?v=${key}`;
+  return `https://www.youtube.com/embed/${key}`;
 }
 
 export function toHoursAndMinutes(totalMinutes: number) {
