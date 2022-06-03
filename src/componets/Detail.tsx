@@ -65,8 +65,8 @@ const Info = styled.div`
   height: auto;
   padding: 20px;
 
-  > * {
-    margin-bottom: 20px;
+  > *:not(:last-child) {
+    margin-bottom: 30px;
   }
 `;
 
@@ -99,12 +99,22 @@ const Genres = styled.ul`
   gap: 4px;
 `;
 const GenreName = styled.div`
-  background-color: #7e7e7e
+  background-color: rgb(50, 50, 50);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 5px;
   border-radius: 10px;
+`;
+
+const SimilarWrapper = styled.div`
+  > *:first-child {
+    margin-bottom: 10px;
+  }
+`;
+const SimilarTitle = styled.h3`
+  font-size: 20px;
+  font-weight: bold;
 `;
 const SimilarContents = styled.div`
   display: grid;
@@ -203,18 +213,23 @@ function Detail({ movieMatch }: IDetailProps) {
                       </Genres>
                       <Overview>{data?.overview}</Overview>
 
-                      <SimilarContents>
-                        {loadingSimilar
-                          ? "laoding..."
-                          : dataSimilar?.results.map((item, index) => (
+                      {loadingSimilar ? (
+                        "laoding..."
+                      ) : (
+                        <SimilarWrapper>
+                          <SimilarTitle>Silmilar Contents</SimilarTitle>
+                          <SimilarContents>
+                            {dataSimilar?.results.map((item, index) => (
                               <Content
                                 $bgImg={makeImagePath(item.backdrop_path)}
                                 key={index}
                               >
-                                {item.title}
+                                {/* {item.title} */}
                               </Content>
                             ))}
-                      </SimilarContents>
+                          </SimilarContents>
+                        </SimilarWrapper>
+                      )}
                     </Info>
                   </>
                 )}
