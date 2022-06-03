@@ -64,19 +64,48 @@ const Info = styled.div`
   width: 100%;
   height: auto;
   padding: 20px;
+
   > * {
     margin-bottom: 20px;
+  }
+`;
+
+const TitleAndRuntime = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+
+  height: fit-content;
+  > * {
+    display: inline-block;
   }
 `;
 
 const Title = styled.h2`
   font-size: 40px;
   font-weight: bold;
-  margin-bottom: 10px;
+  max-width: 90%;
 `;
-const Runtime = styled.div``;
+const Runtime = styled.div`
+  display: flex;
+  align-items: flex-end;
+  padding: 3px 10px;
+`;
 const Overview = styled.div``;
-const Genres = styled.div``;
+const Genres = styled.ul`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+
+  gap: 4px;
+`;
+const GenreName = styled.div`
+  background-color: #7e7e7e
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+`;
 const SimilarContents = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -156,17 +185,24 @@ function Detail({ movieMatch }: IDetailProps) {
                               (video) => video.type === "Trailer"
                             )?.key || ""
                           )}
+                          allow="autoplay"
                           // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         ></iframe>
                       )}
                     </Cover>
 
                     <Info>
-                      <Title>{data?.title}</Title>
-                      <Runtime>{toHoursAndMinutes(data!.runtime)}</Runtime>
-
+                      <TitleAndRuntime>
+                        <Title>{data?.title}</Title>
+                        <Runtime>{toHoursAndMinutes(data!.runtime)}</Runtime>
+                      </TitleAndRuntime>
+                      <Genres>
+                        {data?.genres.map((item) => (
+                          <GenreName key={item.id}>{item.name}</GenreName>
+                        ))}
+                      </Genres>
                       <Overview>{data?.overview}</Overview>
-                      <Genres> {data?.genres.map((item) => item.name)}</Genres>
+
                       <SimilarContents>
                         {loadingSimilar
                           ? "laoding..."
