@@ -1,14 +1,13 @@
-import { useQuery } from "react-query";
+import { useQueries, useQuery } from "react-query";
 import { getMovies, IGetMoviesResult } from "../api";
 
 import styled from "styled-components";
 import { makeImagePath } from "../utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useLayoutEffect, useState } from "react";
 import { useMatch } from "react-router-dom";
 import Slider from "../componets/Slider";
 import Detail from "../componets/Detail";
-import Test from "../componets/Test";
 
 const Wrapper = styled.div`
   overflow-x: hidden;
@@ -50,19 +49,39 @@ const Overview = styled.p`
   text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.6);
 `;
 
+// const movieCategory = ["now_playing", "top_rated", "popular"];
+
 function Home() {
   const movieMatch = useMatch("/movies/:category/:movieId");
 
-  const { isLoading, data } = useQuery<IGetMoviesResult>("now_playing", () =>
-    getMovies("now_playing")
+  // const result = useQueries<IGetMoviesResult[]>(
+  //   movieCategory.map((category) => {
+  //     return {
+  //       queryKey: ["queries", category],
+  //       queryFn: () => getMovies(category),
+  //     };
+  //   })
+  // );
+
+  const { isLoading, data } = useQuery<IGetMoviesResult>(
+    "now_playing",
+    () => getMovies("now_playing"),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const { isLoading: loadingTopRated, data: dataTopRated } =
-    useQuery<IGetMoviesResult>(["top_rated"], () => getMovies("top_rated"));
+    useQuery<IGetMoviesResult>(["top_rated"], () => getMovies("top_rated"), {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    });
 
   const { isLoading: loadingPopular, data: dataPopular } =
-    useQuery<IGetMoviesResult>("popular", () => {
-      return getMovies("popular");
+    useQuery<IGetMoviesResult>("popular", () => getMovies("popular"), {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     });
 
   const [randomIndex, setRandomIndex] = useState(0);
@@ -72,6 +91,9 @@ function Home() {
       data ? Math.floor(Math.random() * data?.results.length) : prev
     );
   }, [data]);
+
+  // console.log(result.some((el) => el.isLoading));
+  // console.log({ result });
 
   const loading =
     isLoading || loadingTopRated || loadingPopular || randomIndex === null;
@@ -91,11 +113,13 @@ function Home() {
             <Overview>{data?.results[randomIndex].overview}</Overview>
           </Banner>
 
-          <Slider
-            data={data!}
-            title={"Movies in theatres"}
-            category={"now_playing"}
-          />
+          {data && (
+            <Slider
+              data={data}
+              title={"Movies in theatres"}
+              category={"now_playing"}
+            />
+          )}
           <Slider
             data={dataTopRated!}
             title={"Top movies"}
@@ -107,15 +131,7 @@ function Home() {
             category={"popular"}
           />
 
-          {/* <AnimatePresence>
-            {movieMatch ? (
-              <Detail movieId={movieMatch!.params.movieId} />
-            ) : null}
-          </AnimatePresence> */}
-
           <Detail movieMatch={movieMatch} />
-
-          {/* {movieMatch ? <Detail movieMatch={movieMatch} /> : null} */}
         </>
       )}
     </Wrapper>

@@ -142,21 +142,36 @@ function Detail({ movieMatch }: IDetailProps) {
   const { isLoading, data } = useQuery<IGetMovieDetals>(
     ["detail", movieMatch?.params.movieId],
     () => getMovieDetails(movieMatch?.params.movieId || ""),
-    { keepPreviousData: true, enabled: !!movieMatch }
+    {
+      keepPreviousData: true,
+      enabled: !!movieMatch,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const { isLoading: loadingSimilar, data: dataSimilar } =
     useQuery<IGetMoviesResult>(
       ["similar", movieMatch?.params.movieId],
       () => getSimilarMovies(movieMatch?.params.movieId || ""),
-      { keepPreviousData: true, enabled: !!movieMatch }
+      {
+        keepPreviousData: true,
+        enabled: !!movieMatch,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
     );
 
   const { isLoading: loadingVideo, data: dataVideo } =
     useQuery<IGetVideosResult>(
       ["video", movieMatch?.params.movieId],
       () => getVideos(movieMatch?.params.movieId || ""),
-      { keepPreviousData: true, enabled: !!movieMatch }
+      {
+        keepPreviousData: true,
+        enabled: !!movieMatch,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
     );
 
   const closeInfo = () => {
@@ -181,7 +196,7 @@ function Detail({ movieMatch }: IDetailProps) {
             >
               <InnerWrapper>
                 {isLoading ? (
-                  <div>loading</div>
+                  <div>loading...</div>
                 ) : (
                   <>
                     <Cover

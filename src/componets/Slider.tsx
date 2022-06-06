@@ -32,16 +32,12 @@ const Row = styled(motion.div)`
 
   transform-style: preserve-3d;
 `;
-const Item = styled(motion.div)<{ $bgImg: string }>`
+const Item = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
   position: relative;
-  background-image: url(${(props) => props.$bgImg});
-  background-size: cover;
-  background-position: center center;
-  aspect-ratio: ${(props) => props.theme.coverRatio};
-  color: red;
-  font-size: 66px;
   transform: perspective(500px);
-
   transform-origin: bottom center;
   :first-child {
     transform-origin: bottom left;
@@ -50,13 +46,23 @@ const Item = styled(motion.div)<{ $bgImg: string }>`
     transform-origin: bottom right;
   }
 `;
+
+const Cover = styled(motion.div)<{ $bgImg: string }>`
+  background-image: url(${(props) => props.$bgImg});
+  background-size: cover;
+  background-position: center center;
+
+  aspect-ratio: ${(props) => props.theme.coverRatio};
+`;
+
 const Info = styled(motion.div)`
   width: 100%;
   padding: 10px;
-  position: absolute;
+  position: relative;
   bottom: 0;
-  background-color: darkblue;
+  background-color: rgb(50, 50, 50);
   opacity: 0;
+
   h4 {
     font-size: 15px;
   }
@@ -71,12 +77,12 @@ const NextArrow = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 99;
   svg {
     width: 40px;
     height: 40px;
     fill: white;
+    cursor: pointer;
   }
 `;
 
@@ -94,12 +100,18 @@ const itemVariants = {
   hover: {
     scale: 1.3,
     z: 100,
+
     transition: { delay: 0.3 },
   },
 };
 
 const infoVariants = {
+  inital: {
+    scaleY: 0,
+    opacity: 0,
+  },
   hover: {
+    scaleY: 1,
     opacity: 1,
     transition: { delay: 0.3 },
   },
@@ -162,9 +174,11 @@ function Slider({ data, title, category }: ISliderProps) {
                   initial="initial"
                   whileHover="hover"
                   transition={{ type: "tween" }}
-                  $bgImg={makeImagePath(item.backdrop_path, "w500")}
                   key={item.id}
                 >
+                  <Cover
+                    $bgImg={makeImagePath(item.backdrop_path, "w500")}
+                  ></Cover>
                   <Info variants={infoVariants}>
                     <h4>{item.title}</h4>
                   </Info>
@@ -172,8 +186,12 @@ function Slider({ data, title, category }: ISliderProps) {
               ))}
           </Row>
         </AnimatePresence>
-        <NextArrow onClick={increasesliderIndex}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+        <NextArrow>
+          <svg
+            onClick={increasesliderIndex}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 320 512"
+          >
             <path d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z" />
           </svg>
         </NextArrow>
