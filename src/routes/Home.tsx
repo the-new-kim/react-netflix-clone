@@ -54,7 +54,7 @@ const Overview = styled.p`
 function Home() {
   const movieMatch = useMatch("/movies/:category/:movieId");
 
-  // const result = useQueries<IGetMoviesResult[]>(
+  // const result = useQueries(
   //   movieCategory.map((category) => {
   //     return {
   //       queryKey: ["queries", category],
@@ -64,7 +64,7 @@ function Home() {
   // );
 
   const { isLoading, data } = useQuery<IGetMoviesResult>(
-    "now_playing",
+    ["now_playing", "movie"],
     () => getMovies("now_playing"),
     {
       refetchOnMount: false,
@@ -73,16 +73,24 @@ function Home() {
   );
 
   const { isLoading: loadingTopRated, data: dataTopRated } =
-    useQuery<IGetMoviesResult>(["top_rated"], () => getMovies("top_rated"), {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    });
+    useQuery<IGetMoviesResult>(
+      ["top_rated", "movie"],
+      () => getMovies("top_rated"),
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
+    );
 
   const { isLoading: loadingPopular, data: dataPopular } =
-    useQuery<IGetMoviesResult>("popular", () => getMovies("popular"), {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    });
+    useQuery<IGetMoviesResult>(
+      ["popular", "movie"],
+      () => getMovies("popular"),
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
+    );
 
   const [randomIndex, setRandomIndex] = useState(0);
 
@@ -93,7 +101,7 @@ function Home() {
   }, [data]);
 
   // console.log(result.some((el) => el.isLoading));
-  // console.log({ result });
+  // console.log(result);
 
   const loading =
     isLoading || loadingTopRated || loadingPopular || randomIndex === null;
@@ -120,16 +128,20 @@ function Home() {
               category={"now_playing"}
             />
           )}
-          <Slider
-            data={dataTopRated!}
-            title={"Top movies"}
-            category={"top_rated"}
-          />
-          <Slider
-            data={dataPopular!}
-            title={"popular movies"}
-            category={"popular"}
-          />
+          {dataTopRated && (
+            <Slider
+              data={dataTopRated}
+              title={"Top movies"}
+              category={"top_rated"}
+            />
+          )}
+          {dataPopular && (
+            <Slider
+              data={dataPopular!}
+              title={"popular movies"}
+              category={"popular"}
+            />
+          )}
 
           <Detail movieMatch={movieMatch} />
         </>

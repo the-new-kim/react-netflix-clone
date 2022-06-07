@@ -1,18 +1,23 @@
 const API_KEY = "cf13f93b5d8390312d36ffb98bb38259";
 const BASE_URL = "https://api.themoviedb.org/3/";
 
-// https://api.themoviedb.org/3/movie/752623/videos?api_key=cf13f93b5d8390312d36ffb98bb38259&language=en-US
-
-export interface IMovie {
+interface IMedia {
   id: number;
   backdrop_path: string;
   poster_path: string;
-  title: string;
   overview: string;
 }
 
+export interface IMovie extends IMedia {
+  title: string;
+}
+
+export interface ITvShow extends IMedia {
+  name: string;
+}
+
 export interface IGetMoviesResult {
-  dates: { maximum: string; minimum: string };
+  dates?: { maximum: string; minimum: string };
   page: number;
   results: IMovie[];
   total_pages: number;
@@ -65,5 +70,15 @@ export interface IGetVideosResult {
 export function getVideos(id: string | number) {
   return fetch(
     `${BASE_URL}movie/${id}/videos?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+
+export interface ISearchResult {
+  results: IMovie[];
+}
+
+export function searchContents(keyword: string) {
+  return fetch(
+    `${BASE_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${keyword}&page=1&include_adult=false`
   ).then((response) => response.json());
 }

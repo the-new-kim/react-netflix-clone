@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./componets/Header";
 import Home from "./routes/Home";
 import Movie from "./routes/Movie";
+import Search from "./routes/Search";
 import Tv from "./routes/Tv";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
         </Route>
         <Route path="/movie" element={<Movie />} />
         <Route path="/tv" element={<Tv />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </BrowserRouter>
   );

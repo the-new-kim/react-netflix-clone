@@ -1,7 +1,9 @@
 import { motion, useAnimation, useViewportScroll } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { Link, useMatch } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useOutsideClick from "../hooks/useOutsideClick";
 
 const Wrapper = styled(motion.header)`
   position: fixed;
@@ -51,7 +53,7 @@ const ActiveLink = styled(motion.div)`
   background-color: rgba(255, 255, 255, 0.3);
 `;
 
-const Search = styled.div`
+const Search = styled.form`
   position: relative;
   display: flex;
   justify-content: flex-end;
@@ -97,10 +99,23 @@ const wrapperVariants = {
   scroll: { background: "linear-gradient(0deg, rgba(0,0,0,1), rgba(0,0,0,1))" },
 };
 
+interface IForm {
+  keyword: string;
+}
+
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const { scrollY } = useViewportScroll();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const { register, handleSubmit, setValue, setFocus } = useForm<IForm>();
+
+  const navigate = useNavigate();
+
+  const onValid = ({ keyword }: IForm) => {
+    navigate(`/search?keyword=${keyword}`);
+    setValue("keyword", "");
+  };
 
   const homeMatch = useMatch("/");
   const movieMatch = useMatch("/movie");
@@ -110,8 +125,34 @@ function Header() {
 
   const toggleSearch = () => {
     setSearchOpen((prev) => !prev);
-    searchOpen ? inputRef.current?.blur() : inputRef.current?.focus();
   };
+
+  // const [outsideClicked, setOutsideClicked] = useState(false);
+
+  // useEffect(() => {
+  //   const handleClick = (event: MouseEvent | null) => {
+  //     setOutsideClicked(!formRef.current?.contains(event.target));
+  //   };
+  //   document.addEventListener("click", handleClick);
+
+  //   return () => document.removeEventListener("click", handleClick);
+  // }, [outsideClicked]);
+
+  // useEffect(() => {
+  //   outsideClicked && setSearchOpen(false);
+  // }, [outsideClicked]);
+
+  const outsideClicked = useOutsideClick(formRef);
+
+  useEffect(() => {
+    searchOpen && outsideClicked && setSearchOpen(false);
+  }, [outsideClicked]);
+
+  useEffect(() => {
+    searchOpen
+      ? setFocus("keyword", { shouldSelect: true })
+      : setFocus("keyword", { shouldSelect: false });
+  }, [searchOpen]);
 
   useEffect(() => {
     scrollY.onChange(() => {
@@ -162,9 +203,9 @@ function Header() {
       </Col>
 
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)} ref={formRef}>
           <SearchInput
-            ref={inputRef}
+            {...register("keyword", { required: true })}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: searchOpen ? 1 : 0 }}
             transition={{ type: "tween" }}
@@ -175,8 +216,8 @@ function Header() {
             onClick={toggleSearch}
             animate={{
               x:
-                searchOpen && inputRef.current
-                  ? -inputRef.current?.clientWidth + 25
+                searchOpen && formRef.current
+                  ? -formRef.current?.clientWidth + 25
                   : 0,
             }}
             transition={{ type: "tween" }}
