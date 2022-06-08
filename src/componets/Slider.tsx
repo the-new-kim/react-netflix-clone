@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { IGetMoviesResult } from "../api";
+import { IGetMoviesResult, IGetTvShowsResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled(motion.div)`
@@ -120,15 +120,15 @@ const infoVariants = {
 const sliderOffset = 6;
 
 interface ISliderProps {
-  data: IGetMoviesResult;
+  data: IGetMoviesResult | IGetTvShowsResult;
   title: string;
   category: string;
 }
 
 function Slider({ data, title, category }: ISliderProps) {
   const navigate = useNavigate();
-  const onItemClicked = (movieId: number, categoryName: string) => {
-    navigate(`/movies/${categoryName}/${movieId}`);
+  const onItemClicked = (mediaId: number, categoryName: string) => {
+    navigate(`${categoryName}/${mediaId}`);
   };
 
   const [sliderIndex, setSliderIndex] = useState(0);
@@ -180,7 +180,7 @@ function Slider({ data, title, category }: ISliderProps) {
                     $bgImg={makeImagePath(item.backdrop_path, "w500")}
                   ></Cover>
                   <Info variants={infoVariants}>
-                    <h4>{item.title}</h4>
+                    <h4>{"title" in item ? item.title : item.name}</h4>
                   </Info>
                 </Item>
               ))}

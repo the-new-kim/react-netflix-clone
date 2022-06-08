@@ -33,9 +33,8 @@ function Search() {
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");
 
-  const { data, isLoading } = useQuery<ISearchMovieResult>(
-    ["search", keyword],
-    () => searchContents(keyword || "")
+  const { data } = useQuery<ISearchMovieResult>(["search", keyword], () =>
+    searchContents(keyword || "")
   );
 
   return (

@@ -24,9 +24,23 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
+export interface IGetTvShowsResult {
+  dates?: { maximum: string; minimum: string };
+  page: number;
+  results: ITvShow[];
+  total_pages: number;
+  total_results: number;
+}
+
 export function getMovies(category: string) {
   return fetch(
     `${BASE_URL}movie/${category}?api_key=${API_KEY}&language=en-US&page=1`
+  ).then((response) => response.json());
+}
+
+export function getTvShows(category: string) {
+  return fetch(
+    `${BASE_URL}tv/${category}?api_key=${API_KEY}&language=en-US&page=1`
   ).then((response) => response.json());
 }
 
@@ -44,6 +58,15 @@ export interface IGetMovieDetals {
   runtime: number;
 }
 
+export interface IGetTvShowDetails {
+  backdrop_path: string;
+  genres: IGenres[];
+  id: number;
+  name: string;
+  overview: string;
+  runtime: number;
+}
+
 export function getMovieDetails(id: string | number) {
   return fetch(`${BASE_URL}movie/${id}?api_key=${API_KEY}&language=en-US`).then(
     (response) => response.json()
@@ -53,6 +76,18 @@ export function getMovieDetails(id: string | number) {
 export function getSimilarMovies(id: string | number) {
   return fetch(
     `${BASE_URL}movie/${id}/similar?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+
+export function getTvDetails(id: string | number) {
+  return fetch(`${BASE_URL}tv/${id}?api_key=${API_KEY}&language=en-US`).then(
+    (response) => response.json()
+  );
+}
+
+export function getSimilarTvShows(id: string | number) {
+  return fetch(
+    `${BASE_URL}tv/${id}/similar?api_key=${API_KEY}&language=en-US`
   ).then((response) => response.json());
 }
 
@@ -67,9 +102,15 @@ export interface IGetVideosResult {
   results: IVideo[];
 }
 
-export function getVideos(id: string | number) {
+export function getMovieTrailer(id: string | number) {
   return fetch(
     `${BASE_URL}movie/${id}/videos?api_key=${API_KEY}&language=en-US`
+  ).then((response) => response.json());
+}
+
+export function getTvShowTrailer(id: string | number) {
+  return fetch(
+    `${BASE_URL}tv/${id}/videos?api_key=${API_KEY}&language=en-US`
   ).then((response) => response.json());
 }
 

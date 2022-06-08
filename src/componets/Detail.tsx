@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   getMovieDetails,
+  getMovieTrailer,
   getSimilarMovies,
-  getVideos,
+  getSimilarTvShows,
+  getTvDetails,
+  getTvShowTrailer,
   IGetMovieDetals,
   IGetMoviesResult,
+  IGetTvShowDetails,
   IGetVideosResult,
 } from "../api";
 import { makeImagePath, makeVideoPath, toHoursAndMinutes } from "../utils";
@@ -131,20 +135,24 @@ const Content = styled.div<{ $bgImg: string }>`
 `;
 
 interface IDetailProps {
-  movieMatch: {
-    params: { movieId: string | undefined; category: string | undefined };
+  mediaMatch: {
+    params: { mediaId: string | undefined; category: string | undefined };
   } | null;
+  isTv: boolean;
 }
 
-function Detail({ movieMatch }: IDetailProps) {
+function Detail({ mediaMatch, isTv }: IDetailProps) {
   const navigate = useNavigate();
 
-  const { isLoading, data } = useQuery<IGetMovieDetals>(
-    ["detail", movieMatch?.params.movieId],
-    () => getMovieDetails(movieMatch?.params.movieId || ""),
+  const { isLoading, data } = useQuery<IGetMovieDetals | IGetTvShowDetails>(
+    ["detail", mediaMatch?.params.mediaId],
+    () =>
+      isTv
+        ? getTvDetails(mediaMatch?.params.mediaId || "")
+        : getMovieDetails(mediaMatch?.params.mediaId || ""),
     {
       keepPreviousData: true,
-      enabled: !!movieMatch,
+      enabled: !!mediaMatch,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
     }
@@ -152,11 +160,14 @@ function Detail({ movieMatch }: IDetailProps) {
 
   const { isLoading: loadingSimilar, data: dataSimilar } =
     useQuery<IGetMoviesResult>(
-      ["similar", movieMatch?.params.movieId],
-      () => getSimilarMovies(movieMatch?.params.movieId || ""),
+      ["similar", mediaMatch?.params.mediaId],
+      () =>
+        isTv
+          ? getSimilarTvShows(mediaMatch?.params.mediaId || "")
+          : getSimilarMovies(mediaMatch?.params.mediaId || ""),
       {
         keepPreviousData: true,
-        enabled: !!movieMatch,
+        enabled: !!mediaMatch,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
       }
@@ -164,18 +175,21 @@ function Detail({ movieMatch }: IDetailProps) {
 
   const { isLoading: loadingVideo, data: dataVideo } =
     useQuery<IGetVideosResult>(
-      ["video", movieMatch?.params.movieId],
-      () => getVideos(movieMatch?.params.movieId || ""),
+      ["video", mediaMatch?.params.mediaId],
+      () =>
+        isTv
+          ? getTvShowTrailer(mediaMatch?.params.mediaId || "")
+          : getMovieTrailer(mediaMatch?.params.mediaId || ""),
       {
         keepPreviousData: true,
-        enabled: !!movieMatch,
+        enabled: !!mediaMatch,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
       }
     );
 
   const closeInfo = () => {
-    navigate("/");
+    navigate(-1);
   };
 
   const { scrollY } = useViewportScroll();
@@ -183,7 +197,7 @@ function Detail({ movieMatch }: IDetailProps) {
   return (
     <>
       <AnimatePresence initial={false}>
-        {movieMatch === null ? null : (
+        {mediaMatch === null ? null : (
           <>
             <Oberlay
               onClick={closeInfo}
@@ -191,7 +205,7 @@ function Detail({ movieMatch }: IDetailProps) {
               exit={{ opacity: 0 }}
             />
             <Wrapper
-              layoutId={`${movieMatch.params.category}${movieMatch.params.movieId}`}
+              layoutId={`${mediaMatch.params.category}${mediaMatch.params.mediaId}`}
               style={{ top: scrollY.get() + 100 }}
             >
               <InnerWrapper>
@@ -216,36 +230,42 @@ function Detail({ movieMatch }: IDetailProps) {
                       )}
                     </Cover>
 
-                    <Info>
-                      <TitleAndRuntime>
-                        <Title>{data?.title}</Title>
-                        <Runtime>{toHoursAndMinutes(data!.runtime)}</Runtime>
-                      </TitleAndRuntime>
-                      <Genres>
-                        {data?.genres.map((item) => (
-                          <GenreName key={item.id}>{item.name}</GenreName>
-                        ))}
-                      </Genres>
-                      <Overview>{data?.overview}</Overview>
+                    {data ? (
+                      <Info>
+                        <TitleAndRuntime>
+                          <Title>
+                            {"title" in data ? data.title : data.name}
+                          </Title>
+                          {isTv ? null : (
+                            <Runtime>{toHoursAndMinutes(data.runtime)}</Runtime>
+                          )}
+                        </TitleAndRuntime>
+                        <Genres>
+                          {data?.genres.map((item) => (
+                            <GenreName key={item.id}>{item.name}</GenreName>
+                          ))}
+                        </Genres>
+                        <Overview>{data?.overview}</Overview>
 
-                      {loadingSimilar ? (
-                        "laoding..."
-                      ) : (
-                        <SimilarWrapper>
-                          <SimilarTitle>Silmilar Contents</SimilarTitle>
-                          <SimilarContents>
-                            {dataSimilar?.results.map((item, index) => (
-                              <Content
-                                $bgImg={makeImagePath(item.backdrop_path)}
-                                key={index}
-                              >
-                                {/* {item.title} */}
-                              </Content>
-                            ))}
-                          </SimilarContents>
-                        </SimilarWrapper>
-                      )}
-                    </Info>
+                        {loadingSimilar ? (
+                          "laoding..."
+                        ) : (
+                          <SimilarWrapper>
+                            <SimilarTitle>Silmilar Contents</SimilarTitle>
+                            <SimilarContents>
+                              {dataSimilar?.results.map((item, index) => (
+                                <Content
+                                  $bgImg={makeImagePath(item.backdrop_path)}
+                                  key={index}
+                                >
+                                  {/* {item.title} */}
+                                </Content>
+                              ))}
+                            </SimilarContents>
+                          </SimilarWrapper>
+                        )}
+                      </Info>
+                    ) : null}
                   </>
                 )}
               </InnerWrapper>
