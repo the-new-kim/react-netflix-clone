@@ -1,18 +1,26 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
-function useOutsideClick(ref: React.MutableRefObject<HTMLElement | null>) {
-  const [outsideClicked, setOutsideClicked] = useState(false);
+const useOutsideClick = <T extends HTMLElement>(
+  initialState: boolean,
+  toggler: Function
+) => {
+  const ref = useRef<T>(null);
 
   useEffect(() => {
+    if (!ref.current) return;
+
+    const element = ref.current;
+
     const handleClick = (event: MouseEvent) => {
-      setOutsideClicked(!ref.current?.contains(event.target as Node));
+      if (initialState && !element.contains(event.target as Node)) toggler();
     };
+
     document.addEventListener("click", handleClick);
 
     return () => document.removeEventListener("click", handleClick);
-  }, [ref]);
+  }, [initialState, toggler]);
 
-  return outsideClicked;
-}
+  return ref;
+};
 
 export default useOutsideClick;

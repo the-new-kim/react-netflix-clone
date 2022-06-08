@@ -1,9 +1,9 @@
 import { motion, useAnimation, useViewportScroll } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useOutsideClick from "../hooks/useOutsideClick";
+import useOutClick from "../hooks/useOutsideClick";
 
 const Wrapper = styled(motion.header)`
   position: fixed;
@@ -106,7 +106,6 @@ interface IForm {
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const { scrollY } = useViewportScroll();
-  const formRef = useRef<HTMLFormElement>(null);
 
   const { register, handleSubmit, setValue, setFocus } = useForm<IForm>();
 
@@ -127,32 +126,13 @@ function Header() {
     setSearchOpen((prev) => !prev);
   };
 
-  // const [outsideClicked, setOutsideClicked] = useState(false);
-
-  // useEffect(() => {
-  //   const handleClick = (event: MouseEvent | null) => {
-  //     setOutsideClicked(!formRef.current?.contains(event.target));
-  //   };
-  //   document.addEventListener("click", handleClick);
-
-  //   return () => document.removeEventListener("click", handleClick);
-  // }, [outsideClicked]);
-
-  // useEffect(() => {
-  //   outsideClicked && setSearchOpen(false);
-  // }, [outsideClicked]);
-
-  const outsideClicked = useOutsideClick(formRef);
-
-  useEffect(() => {
-    searchOpen && outsideClicked && setSearchOpen(false);
-  }, [outsideClicked]);
+  const formRef = useOutClick<HTMLFormElement>(searchOpen, toggleSearch);
 
   useEffect(() => {
     searchOpen
       ? setFocus("keyword", { shouldSelect: true })
       : setFocus("keyword", { shouldSelect: false });
-  }, [searchOpen]);
+  }, [searchOpen, setFocus]);
 
   useEffect(() => {
     scrollY.onChange(() => {
@@ -162,7 +142,7 @@ function Header() {
         wrapperAnimation.start("top");
       }
     });
-  }, [scrollY]);
+  }, [scrollY, wrapperAnimation]);
 
   return (
     <Wrapper
@@ -217,7 +197,7 @@ function Header() {
             animate={{
               x:
                 searchOpen && formRef.current
-                  ? -formRef.current?.clientWidth + 25
+                  ? -formRef.current.clientWidth + 25
                   : 0,
             }}
             transition={{ type: "tween" }}

@@ -73,12 +73,24 @@ export function getVideos(id: string | number) {
   ).then((response) => response.json());
 }
 
-export interface ISearchResult {
-  results: IMovie[];
+export enum MediaType {
+  movie = "movie",
+  tv = "tv",
+  person = "person",
+}
+
+interface IMulti extends IMedia {
+  title?: string;
+  name?: string;
+  media_type: MediaType;
+}
+
+export interface ISearchMovieResult {
+  results: IMulti[];
 }
 
 export function searchContents(keyword: string) {
   return fetch(
-    `${BASE_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${keyword}&page=1&include_adult=false`
+    `${BASE_URL}search/multi?api_key=${API_KEY}&language=en-US&query=${keyword}&page=1&include_adult=false`
   ).then((response) => response.json());
 }
