@@ -51,6 +51,7 @@ interface IGenres {
 
 export interface IGetMovieDetals {
   backdrop_path: string;
+  poster_path: string;
   genres: IGenres[];
   id: number;
   title: string;
@@ -60,6 +61,7 @@ export interface IGetMovieDetals {
 
 export interface IGetTvShowDetails {
   backdrop_path: string;
+  poster_path: string;
   genres: IGenres[];
   id: number;
   name: string;
@@ -120,7 +122,7 @@ export enum MediaType {
   person = "person",
 }
 
-interface IMulti extends IMedia {
+export interface IMulti extends IMedia {
   title?: string;
   name?: string;
   media_type: MediaType;

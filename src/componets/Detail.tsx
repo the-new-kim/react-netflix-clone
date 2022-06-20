@@ -189,7 +189,7 @@ function Detail({ mediaMatch, isTv }: IDetailProps) {
     );
 
   const closeInfo = () => {
-    navigate(-1);
+    isTv ? navigate("/tv") : navigate("");
   };
 
   const { scrollY } = useViewportScroll();
@@ -214,7 +214,10 @@ function Detail({ mediaMatch, isTv }: IDetailProps) {
                 ) : (
                   <>
                     <Cover
-                      $bgImg={makeImagePath(data?.backdrop_path || "", "w500")}
+                      $bgImg={makeImagePath(
+                        data?.backdrop_path || data?.poster_path || "",
+                        "w500"
+                      )}
                     >
                       {loadingVideo ? null : (
                         <iframe

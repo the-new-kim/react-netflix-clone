@@ -37,14 +37,14 @@ const Item = styled(motion.div)`
   flex-direction: column;
   cursor: pointer;
   position: relative;
-  transform: perspective(500px);
+  /* transform: perspective(500px);
   transform-origin: bottom center;
   :first-child {
     transform-origin: bottom left;
   }
   :last-child {
     transform-origin: bottom right;
-  }
+  } */
 `;
 
 const Cover = styled(motion.div)<{ $bgImg: string }>`
@@ -96,6 +96,8 @@ const itemVariants = {
   initial: {
     scale: 1,
     z: 0,
+    originX: 0.5,
+    originY: 1,
   },
   hover: {
     scale: 1.3,
@@ -172,12 +174,16 @@ function Slider({ data, title, category }: ISliderProps) {
                   onClick={() => onItemClicked(item.id, category)}
                   variants={itemVariants}
                   initial="initial"
+                  exit="initial"
                   whileHover="hover"
                   transition={{ type: "tween" }}
                   key={item.id}
                 >
                   <Cover
-                    $bgImg={makeImagePath(item.backdrop_path, "w500")}
+                    $bgImg={makeImagePath(
+                      item.backdrop_path || item.poster_path,
+                      "w500"
+                    )}
                   ></Cover>
                   <Info variants={infoVariants}>
                     <h4>{"title" in item ? item.title : item.name}</h4>

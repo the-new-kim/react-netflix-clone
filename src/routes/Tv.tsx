@@ -111,7 +111,9 @@ function Tv() {
         <>
           <Banner
             $bgImg={makeImagePath(
-              dataNowPlaying?.results[randomIndex].backdrop_path || ""
+              dataNowPlaying?.results[randomIndex].backdrop_path ||
+                dataNowPlaying?.results[randomIndex].poster_path ||
+                ""
             )}
           >
             <Title>{dataNowPlaying?.results[randomIndex].name}</Title>

@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { ISearchMovieResult, MediaType, searchContents } from "../api";
+import { IMulti, ISearchMovieResult, MediaType, searchContents } from "../api";
+import Column from "../componets/Column";
+import useViewportSize from "../hooks/useViewportSize";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled.div`
@@ -14,27 +17,16 @@ const Wrapper = styled.div`
 const Results = styled.div`
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(6, 1fr);
-`;
-
-const Result = styled.div`
-  background-color: saddlebrown;
-`;
-
-const Cover = styled(motion.div)<{ $bgImg: string }>`
-  background-image: url(${(props) => props.$bgImg});
-  background-size: cover;
-  background-position: center center;
-
-  aspect-ratio: ${(props) => props.theme.coverRatio};
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 `;
 
 function Search() {
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");
 
-  const { data } = useQuery<ISearchMovieResult>(["search", keyword], () =>
-    searchContents(keyword || "")
+  const { data, isLoading } = useQuery<ISearchMovieResult>(
+    ["search", keyword],
+    () => searchContents(keyword || "")
   );
 
   return (
@@ -43,14 +35,12 @@ function Search() {
       <Results>
         {data?.results.map((result, index) =>
           result.media_type === MediaType.person ? null : (
-            <Result key={index}>
-              {result.backdrop_path && (
-                <Cover $bgImg={makeImagePath(result.backdrop_path)} />
-              )}
-              {result.media_type === MediaType.movie
-                ? result.title
-                : result.name}
-            </Result>
+            <Column
+              key={result.id}
+              isLoading={isLoading}
+              data={result}
+              id={result.id + ""}
+            />
           )
         )}
       </Results>
